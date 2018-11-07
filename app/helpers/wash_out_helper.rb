@@ -6,7 +6,7 @@ module WashOutHelper
       if param.map.present? || !param.value.nil?
         { :"xsi:type" => param.namespaced_type }
       else
-        { :"xsi:nil" => true }
+        { :"xsi:type" => param.namespaced_type, :"xsi:nil" => true }
       end
     when 'document'
       {}
