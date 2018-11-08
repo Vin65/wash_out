@@ -11,7 +11,7 @@ xml.tag! "soapenv:Envelope",  "xmlns:soapenv" => 'http://schemas.xmlsoap.org/soa
   end
   xml.tag! "soapenv:Body" do
     xml.tag! "ns1:#{@action_spec[:response_tag]}",  "soapenv:encodingStyle" => "http://schemas.xmlsoap.org/soap/encoding/",
-                                                    "xmlns:tns" => @namespace  do
+                                                    "xmlns:ns1" => @namespace  do
       wsdl_data xml, result
     end
   end
