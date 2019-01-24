@@ -15,6 +15,17 @@ module WashOutHelper
     end
   end
 
+  def attributes_for_arrays(param)
+    same_name_param = param.map.find {|p| !p.is_a?(Array) && (p.name == param.name) }
+    return {} if same_name_param.nil?
+
+    {
+        "soapenc:arrayType":  "tns:#{param.name.singularize}[#{same_name_param.map.size}]",
+        "xsi:type":           "soapenc:Array",
+        "xmlns:soapenc":      "http://schemas.xmlsoap.org/soap/encoding"
+    }
+  end
+
   def wsdl_data_attrs(param)
     param.map.reduce({}) do |memo, p|
       if p.respond_to?(:attribute?) && p.attribute?
@@ -32,6 +43,7 @@ module WashOutHelper
       tag_name = param.name
       param_options = wsdl_data_options(param)
       param_options.merge! wsdl_data_attrs(param)
+      param_options.merge! attributes_for_arrays(param)
 
       if param.struct?
         if param.multiplied
