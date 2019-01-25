@@ -43,7 +43,7 @@ module WashOutHelper
       tag_name = param.name
       param_options = wsdl_data_options(param)
       param_options.merge! wsdl_data_attrs(param)
-      param_options.merge! attributes_for_arrays(param)
+      param_options.merge! attributes_for_arrays(param) if controller.soap_config.soap_encoded_arrays
 
       if param.struct?
         if param.multiplied
