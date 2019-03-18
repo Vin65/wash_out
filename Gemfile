@@ -18,3 +18,4 @@ gem 'simplecov-summary'
 
 gem 'minitest', '<5.10.0'
 gem 'test-unit', '~> 3.0'
+gem 'rspec_junit_formatter'
