@@ -1,0 +1,69 @@
+# Ruby CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+#
+version: 2
+jobs:
+  build:
+    working_directory: ~/wash_out
+
+    docker:
+      - image: circleci/ruby:2.4
+        environment:
+          - BUNDLE_JOBS=3
+          - BUNDLE_RETRY=3
+          - BUNDLE_PATH=vendor/bundle
+          - RAILS_ENV=test
+          - RACK_ENV=test
+
+    steps:
+      # Restore GitHub repository cache
+      - restore_cache:
+          keys:
+            - source-v1-{{ .Branch }}-{{ .Revision }}
+            - source-v1-{{ .Branch }}-
+            - source-v1-
+
+      # Checkout code from GitHub repository
+      - checkout
+
+      # Save GitHub repository cache
+      - save_cache:
+          key: source-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+
+      # Restore bundle cache
+      - restore_cache:
+          keys:
+            - gemfile-bundle-v1-{{ checksum "wash_out.gemspec" }}
+            # fallback to using the latest cache if no exact match is found
+            - gemfile-bundle-v1-
+
+      # Install gems
+      - run:
+          name: Bundle Install
+          command: |
+            gem update bundler
+            bundle check || bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+      # Save bundle cache
+      - save_cache:
+          key: gemfile-bundle-v1-{{ checksum "wash_out.gemspec" }}
+          paths:
+            - ./vendor/bundle
+
+      # Rspec
+      - run:
+          name: Run rspec tests in parallel
+          command: |
+            mkdir /tmp/test-results
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out test_results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # collect test results
+      - store_test_results:
+          path: /tmp/test-results
