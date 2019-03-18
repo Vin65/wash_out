@@ -15,13 +15,13 @@ SIMPLE_REQUEST_XML_HEREDOC
 
 SIMPLE_RESPONSE_XML = <<-SIMPLE_RESPONSE_XML_HEREDOC
 <?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false">
-  <soap:Body>
-    <tns:answerResponse>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Body>
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
       <Value xsi:type="xsd:int">42</Value>
-    </tns:answerResponse>
-  </soap:Body>
-</soap:Envelope>
+    </ns1:answerResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
 SIMPLE_RESPONSE_XML_HEREDOC
 
 
@@ -177,13 +177,13 @@ describe WashOut do
 
         expect(HTTPI.post("http://app/route/api/action", request).body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false">
-  <soap:Body>
-    <tns:answerResponse>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Body>
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
       <Value xsi:type="xsd:int">42</Value>
-    </tns:answerResponse>
-  </soap:Body>
-</soap:Envelope>
+    </ns1:answerResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
         XML
       end
 
@@ -208,13 +208,13 @@ describe WashOut do
 
         expect(HTTPI.post("http://app/route/api/action", request).body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false">
-  <soap:Body>
-    <tns:whateverResponse>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Body>
+    <ns1:whateverResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
       <Value xsi:type="xsd:int">42</Value>
-    </tns:whateverResponse>
-  </soap:Body>
-</soap:Envelope>
+    </ns1:whateverResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
         XML
       end
 
@@ -279,7 +279,7 @@ describe WashOut do
             render :soap => {:a => params[:a]}
           end
         end
-        expect(savon(:answer, :a => '')[:answer_response][:a]).to be_nil
+        expect(savon(:answer, :a => '')[:answer_response][:a]).to eq({:"@xsi:type"=>"xsd:string"})
       end
 
       it "accept one parameter" do
@@ -326,7 +326,7 @@ describe WashOut do
                                  :radius => 5 } }
 
         expect(savon(:get_area, message)[:get_area_response]).
-          to eq ({ :area => (Math::PI * 25).to_s, :distance_from_o => (5.0).to_s })
+          to eq ({ :"@soapenv:encoding_style"=>"http://schemas.xmlsoap.org/soap/encoding/", :"@xmlns:ns1"=>"false", :area => (Math::PI * 25).to_s, :distance_from_o => (5.0).to_s })
       end
 
       it "accept arrays" do
@@ -420,6 +420,8 @@ describe WashOut do
 
         expect(savon(:gogogo)[:gogogo_response]).
           to eq({
+            :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
+            :"@xmlns:ns1" => "false",
             :zoo=>"zoo",
             :boo=>{
               :moo=>"moo",
@@ -440,6 +442,8 @@ describe WashOut do
         end
 
         expect(savon(:rumba)[:rumba_response]).to eq({
+          :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
+          :"@xmlns:ns1" => "false",
           :value => ["1", "2", "3"]
         })
       end
@@ -462,6 +466,8 @@ describe WashOut do
         end
 
         expect(savon(:rumba)[:rumba_response]).to eq({
+          :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
+          :"@xmlns:ns1" => "false",
           :rumbas => [
             {:zombies => "suck1",:puppies => "rock1", :"@xsi:type"=>"tns:Rumbas", :@level => "80"},
             {:zombies => "suck2", :puppies => "rock2", :"@xsi:type"=>"tns:Rumbas" }
@@ -481,6 +487,8 @@ describe WashOut do
         end
 
         expect(savon(:rumba)[:rumba_response]).to eq({
+          :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
+          :"@xmlns:ns1" => "false",
           :value => [
             {
               :rumbas => {
@@ -512,7 +520,8 @@ describe WashOut do
             end
           end
 
-          expect(savon(:rocknroll)[:rocknroll_response]).to be nil
+          expect(savon(:rocknroll)[:rocknroll_response]).to eq({:"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
+                                                                   :"@xmlns:ns1" => "false"})
         end
 
         it "respond with complext definition" do
@@ -524,7 +533,8 @@ describe WashOut do
             end
           end
 
-          expect(savon(:rocknroll)[:rocknroll_response]).to be nil
+          expect(savon(:rocknroll)[:rocknroll_response]).to eq({:"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
+                                                                   :"@xmlns:ns1" => "false"})
         end
 
         it "respond with nested simple definition" do
@@ -536,7 +546,7 @@ describe WashOut do
             end
           end
 
-          expect(savon(:rocknroll)[:rocknroll_response][:my_value]).to be_nil
+          expect(savon(:rocknroll)[:rocknroll_response][:my_value]).to eq({:"@xsi:type"=>"tns:MyValue"})
         end
 
         it "responds with missing parameters" do
@@ -549,7 +559,7 @@ describe WashOut do
             end
           end
 
-          expect(savon(:rocknroll)[:rocknroll_response][:my_value]).to be_nil
+          expect(savon(:rocknroll)[:rocknroll_response][:my_value]).to eq({:"@xsi:type"=>"xsd:int"})
         end
 
         it "handles incomplete array response" do
@@ -577,29 +587,29 @@ describe WashOut do
 
         request = <<-XML
           <?xml version="1.0" encoding="UTF-8"?>
-          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="false">
           <env:Header>
-              <tns:Auth>
+              <ns1:Auth>
                 <value>12345</value>
-              </tns:Auth>
+              </ns1:Auth>
           </env:Header>
           <env:Body>
-            <tns:answer>
+            <ns1:answer>
               <value>42</value>
-            </tns:answer>
+            </ns1:answer>
           </env:Body>
           </env:Envelope>
         XML
 
         expect(HTTPI.post("http://app/route/api/action", request).body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false">
-  <soap:Body>
-    <tns:answerResponse>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Body>
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
       <Value xsi:type="xsd:int">42</Value>
-    </tns:answerResponse>
-  </soap:Body>
-</soap:Envelope>
+    </ns1:answerResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
         XML
       end
 
@@ -681,18 +691,18 @@ describe WashOut do
 
         expect(HTTPI.post("http://app/route/api/action", request).body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Header>
     <tns:answerResponse>
       <Value xsi:type="xsd:string">12345</Value>
     </tns:answerResponse>
   </soap:Header>
-  <soap:Body>
-    <tns:answerResponse>
+  <soapenv:Body>
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
       <Value xsi:type="xsd:int">42</Value>
-    </tns:answerResponse>
-  </soap:Body>
-</soap:Envelope>
+    </ns1:answerResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
         XML
       end
     end
@@ -719,18 +729,18 @@ describe WashOut do
 
       expect(HTTPI.post("http://app/route/api/action", request).body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="false">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Header>
     <tns:answerResponse>
       <Auth xsi:type="xsd:string">12345</Auth>
     </tns:answerResponse>
   </soap:Header>
-  <soap:Body>
-    <tns:answerResponse>
+  <soapenv:Body>
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
       <Value xsi:type="xsd:int">42</Value>
-    </tns:answerResponse>
-  </soap:Body>
-</soap:Envelope>
+    </ns1:answerResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
         XML
     end
 
@@ -933,7 +943,7 @@ describe WashOut do
         end
       end
 
-      expect(savon(:specific)).to eq({:test => {:value=>"test"}})
+      expect(savon(:specific)).to eq({:test => {:"@soapenv:encoding_style"=>"http://schemas.xmlsoap.org/soap/encoding/", :"@xmlns:ns1"=>"false", :value=>"test"}})
     end
 
     it "handles snakecase option properly" do
