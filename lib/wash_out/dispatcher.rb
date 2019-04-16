@@ -71,11 +71,11 @@ module WashOut
     end
 
     # This action generates the WSDL for defined SOAP methods.
-    def _generate_wsdl
+    def _generate_wsdl(location=WashOut::Router.url(request, controller_path))
       @map          = self.class.soap_actions
       @namespace    = soap_config.namespace
       @service_name = soap_config.service_name
-      @location     = WashOut::Router.url(request, controller_path)
+      @location     = location
 
       render :template => "wash_out/#{soap_config.wsdl_style}/wsdl", :layout => false,
              :content_type => 'text/xml'
