@@ -90,9 +90,15 @@ module WashOutHelper
           end
 
           if elems.any?
-            xml.tag! "xsd:sequence" do
-              elems.each do |value|
-                xml.tag! "xsd:element", wsdl_occurence(value, false, :name => value.name, :type => value.namespaced_type)
+            if elems.one? && elems.first.name == param.name
+              xml.tag! 'restriction', :base => 'soapenc:Array' do
+                xml.tag! 'attribute', :ref => 'soapenc:arrayType', 'wsdl:arrayType' => "#{elems.first.namespaced_type}[]"
+              end
+            else
+              xml.tag! "xsd:sequence" do
+                elems.each do |value|
+                  xml.tag! "xsd:element", wsdl_occurence(value, false, :name => value.name, :type => value.namespaced_type)
+                end
               end
             end
           end
