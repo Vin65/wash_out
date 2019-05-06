@@ -15,10 +15,9 @@ xml.tag! 'wsdl:definitions',
     xml.tag! 'schema',
              :xmlns           => 'http://www.w3.org/2001/XMLSchema',
              :targetNamespace => @namespace do
-      defined = []
       @map.each do |_operation, formats|
         (formats[:in] + formats[:out]).each do |p|
-          wsdl_type xml, p, defined
+          wsdl_type xml, p
         end
       end
     end

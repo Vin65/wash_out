@@ -73,49 +73,43 @@ module WashOutHelper
     end
   end
 
-  def wsdl_type(xml, param, defined=[])
+  def wsdl_type(xml, param)
     more = []
 
     if param.struct?
-      if !defined.include?(param.basic_type)
-        xml.tag! "xsd:complexType", :name => param.basic_type do
-          attrs, elems = [], []
-          param.map.each do |value|
-            more << value if value.struct?
-            if value.attribute?
-              attrs << value
-            else
-              elems << value
-            end
-          end
-
-          if elems.any?
-            if elems.one? && elems.first.name == param.name
-              xml.tag! 'restriction', :base => 'soapenc:Array' do
-                xml.tag! 'attribute', :ref => 'soapenc:arrayType', 'wsdl:arrayType' => "#{elems.first.namespaced_type}[]"
-              end
-            else
-              xml.tag! "xsd:sequence" do
-                elems.each do |value|
-                  xml.tag! "xsd:element", wsdl_occurence(value, false, :name => value.name, :type => value.namespaced_type)
-                end
-              end
-            end
-          end
-
-          attrs.each do |value|
-            xml.tag! "xsd:attribute", wsdl_occurence(value, false, :name => value.attr_name, :type => value.namespaced_type)
+      xml.tag! "xsd:complexType", :name => param.basic_type do
+        attrs, elems = [], []
+        param.map.each do |value|
+          more << value if value.struct?
+          if value.attribute?
+            attrs << value
+          else
+            elems << value
           end
         end
 
-        defined << param.basic_type
-      elsif !param.classified?
-        raise RuntimeError, "Duplicate use of `#{param.basic_type}` type name. Consider using classified types."
+        if elems.any?
+          if elems.one? && elems.first.name == param.name
+            xml.tag! 'restriction', :base => 'soapenc:Array' do
+              xml.tag! 'attribute', :ref => 'soapenc:arrayType', 'wsdl:arrayType' => "#{elems.first.namespaced_type}[]"
+            end
+          else
+            xml.tag! "xsd:sequence" do
+              elems.each do |value|
+                xml.tag! "xsd:element", wsdl_occurence(value, false, :name => value.name, :type => value.namespaced_type)
+              end
+            end
+          end
+        end
+
+        attrs.each do |value|
+          xml.tag! "xsd:attribute", wsdl_occurence(value, false, :name => value.attr_name, :type => value.namespaced_type)
+        end
       end
     end
 
     more.each do |p|
-      wsdl_type xml, p, defined
+      wsdl_type xml, p
     end
   end
 
