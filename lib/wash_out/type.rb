@@ -5,6 +5,10 @@ module WashOut
       @param_type_name = value.to_s
     end
 
+    def self.wsdl_type_name(value)
+      @param_wsdl_type_name = value.to_s
+    end
+
     def self.map(value)
       raise RuntimeError, "Wrong definition: #{value.inspect}" unless value.is_a?(Hash)
       @param_map = value
@@ -15,6 +19,8 @@ module WashOut
     end
 
     def self.wash_out_param_name(soap_config = nil)
+      return @param_wsdl_type_name if @param_wsdl_type_name.present?
+
       soap_config ||= WashOut::SoapConfig.new({})
       @param_type_name ||= name.underscore.gsub '/', '.'
 
