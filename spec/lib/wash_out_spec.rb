@@ -17,7 +17,7 @@ SIMPLE_RESPONSE_XML = <<-SIMPLE_RESPONSE_XML_HEREDOC
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soapenv:Body>
-    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false" xmlns:tns="false">
       <Value xsi:type="xsd:int">42</Value>
     </ns1:answerResponse>
   </soapenv:Body>
@@ -179,7 +179,7 @@ describe WashOut do
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soapenv:Body>
-    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false" xmlns:tns="false">
       <Value xsi:type="xsd:int">42</Value>
     </ns1:answerResponse>
   </soapenv:Body>
@@ -210,7 +210,7 @@ describe WashOut do
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soapenv:Body>
-    <ns1:whateverResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
+    <ns1:whateverResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false" xmlns:tns="false">
       <Value xsi:type="xsd:int">42</Value>
     </ns1:whateverResponse>
   </soapenv:Body>
@@ -326,7 +326,7 @@ describe WashOut do
                                  :radius => 5 } }
 
         expect(savon(:get_area, message)[:get_area_response]).
-          to eq ({ :"@soapenv:encoding_style"=>"http://schemas.xmlsoap.org/soap/encoding/", :"@xmlns:ns1"=>"false", :area => (Math::PI * 25).to_s, :distance_from_o => (5.0).to_s })
+          to eq ({ :"@soapenv:encoding_style"=>"http://schemas.xmlsoap.org/soap/encoding/", :"@xmlns:ns1"=>"false", :"@xmlns:tns"=>"false", :area => (Math::PI * 25).to_s, :distance_from_o => (5.0).to_s })
       end
 
       it "accept arrays" do
@@ -422,6 +422,7 @@ describe WashOut do
           to eq({
             :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
             :"@xmlns:ns1" => "false",
+            :"@xmlns:tns" => "false",
             :zoo=>"zoo",
             :boo=>{
               :moo=>"moo",
@@ -444,6 +445,7 @@ describe WashOut do
         expect(savon(:rumba)[:rumba_response]).to eq({
           :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
           :"@xmlns:ns1" => "false",
+          :"@xmlns:tns" => "false",
           :value => ["1", "2", "3"]
         })
       end
@@ -468,6 +470,7 @@ describe WashOut do
         expect(savon(:rumba)[:rumba_response]).to eq({
           :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
           :"@xmlns:ns1" => "false",
+          :"@xmlns:tns" => "false",
           :rumbas => [
             {:zombies => "suck1",:puppies => "rock1", :"@xsi:type"=>"tns:Rumbas", :@level => "80"},
             {:zombies => "suck2", :puppies => "rock2", :"@xsi:type"=>"tns:Rumbas" }
@@ -489,6 +492,7 @@ describe WashOut do
         expect(savon(:rumba)[:rumba_response]).to eq({
           :"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
           :"@xmlns:ns1" => "false",
+          :"@xmlns:tns" => "false",
           :value => [
             {
               :rumbas => {
@@ -521,7 +525,7 @@ describe WashOut do
           end
 
           expect(savon(:rocknroll)[:rocknroll_response]).to eq({:"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
-                                                                   :"@xmlns:ns1" => "false"})
+                                                                   :"@xmlns:ns1" => "false", :"@xmlns:tns" => "false"})
         end
 
         it "respond with complext definition" do
@@ -534,7 +538,7 @@ describe WashOut do
           end
 
           expect(savon(:rocknroll)[:rocknroll_response]).to eq({:"@soapenv:encoding_style" => "http://schemas.xmlsoap.org/soap/encoding/",
-                                                                   :"@xmlns:ns1" => "false"})
+                                                                   :"@xmlns:ns1" => "false", :"@xmlns:tns" => "false"})
         end
 
         it "respond with nested simple definition" do
@@ -587,7 +591,7 @@ describe WashOut do
 
         request = <<-XML
           <?xml version="1.0" encoding="UTF-8"?>
-          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="false">
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="false" xmlns:tns="false">
           <env:Header>
               <ns1:Auth>
                 <value>12345</value>
@@ -605,7 +609,7 @@ describe WashOut do
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soapenv:Body>
-    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false" xmlns:tns="false">
       <Value xsi:type="xsd:int">42</Value>
     </ns1:answerResponse>
   </soapenv:Body>
@@ -698,7 +702,7 @@ describe WashOut do
     </tns:answerResponse>
   </soap:Header>
   <soapenv:Body>
-    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false" xmlns:tns="false">
       <Value xsi:type="xsd:int">42</Value>
     </ns1:answerResponse>
   </soapenv:Body>
@@ -736,7 +740,7 @@ describe WashOut do
     </tns:answerResponse>
   </soap:Header>
   <soapenv:Body>
-    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false">
+    <ns1:answerResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="false" xmlns:tns="false">
       <Value xsi:type="xsd:int">42</Value>
     </ns1:answerResponse>
   </soapenv:Body>
@@ -943,7 +947,7 @@ describe WashOut do
         end
       end
 
-      expect(savon(:specific)).to eq({:test => {:"@soapenv:encoding_style"=>"http://schemas.xmlsoap.org/soap/encoding/", :"@xmlns:ns1"=>"false", :value=>"test"}})
+      expect(savon(:specific)).to eq({:test => {:"@soapenv:encoding_style"=>"http://schemas.xmlsoap.org/soap/encoding/", :"@xmlns:ns1"=>"false", :"@xmlns:tns"=>"false", :value=>"test"}})
     end
 
     it "handles snakecase option properly" do
