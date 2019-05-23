@@ -5,8 +5,20 @@ module WashOut
       @param_type_name = value.to_s
     end
 
-    def self.wsdl_type_name(value)
-      @param_wsdl_type_name = value.to_s
+    def self.xsi_namespace(value)
+      @param_xsi_namespace = value.to_s
+    end
+
+    def self.xsi_namespace_value
+      @param_xsi_namespace
+    end
+
+    def self.xmlns(value)
+      @param_xmlns = value.to_s
+    end
+
+    def self.xmlns_value
+      @param_xmlns
     end
 
     def self.map(value)
@@ -19,8 +31,6 @@ module WashOut
     end
 
     def self.wash_out_param_name(soap_config = nil)
-      return @param_wsdl_type_name if @param_wsdl_type_name.present?
-
       soap_config ||= WashOut::SoapConfig.new({})
       @param_type_name ||= name.underscore.gsub '/', '.'
 

@@ -113,7 +113,10 @@ module WashOut
 
     # Returns a WSDL namespaced identifier for this type.
     def namespaced_type
-      struct? ? "tns:#{basic_type}" : "xsd:#{xsd_type}"
+      namespace = struct? ? 'tns' : 'xsd'
+      namespace = self.source_class.xsi_namespace_value if self.source_class.present? && self.source_class.xsi_namespace_value.present?
+
+      struct? ? "#{namespace}:#{basic_type}" : "#{namespace}:#{xsd_type}"
     end
 
     # Parses a +definition+. The format of the definition is best described

@@ -3,10 +3,14 @@ module WashOutHelper
   def wsdl_data_options(param)
     case controller.soap_config.wsdl_style
     when 'rpc'
+      output = { :"xsi:type" => param.namespaced_type }
+      if param.source_class.present? && param.source_class.xmlns_value.present?
+        output.merge!({ :"xmlns:#{param.source_class.xsi_namespace_value}" => param.source_class.xmlns_value })
+      end
       if param.map.present? || !param.value.nil?
-        { :"xsi:type" => param.namespaced_type }
+        output
       else
-        { :"xsi:type" => param.namespaced_type, :"xsi:nil" => true }
+        output.merge( :"xsi:nil" => true )
       end
     when 'document'
       {}
@@ -19,8 +23,13 @@ module WashOutHelper
     same_name_param = param.map.find {|p| !p.is_a?(Array) && (p.name == param.name) }
     return {} if same_name_param.nil?
 
+    namespace = 'tns'
+    if same_name_param.source_class.present? && same_name_param.source_class.xsi_namespace_value.present?
+      namespace = same_name_param.source_class.xsi_namespace_value
+    end
+
     {
-        "soapenc:arrayType":  "tns:#{param.name.singularize}[#{same_name_param.map.size}]",
+        "soapenc:arrayType":  "#{namespace}:#{param.name.singularize}[#{same_name_param.map.size}]",
         "xsi:type":           "soapenc:Array",
         "xmlns:soapenc":      "http://schemas.xmlsoap.org/soap/encoding"
     }
