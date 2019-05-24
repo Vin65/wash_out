@@ -28,11 +28,16 @@ module WashOutHelper
       namespace = same_name_param.source_class.xsi_namespace_value
     end
 
+    xmlns = {}
+    if same_name_param.source_class.present? && same_name_param.source_class.xmlns_value.present?
+      xmlns.merge!({ :"xmlns:#{same_name_param.source_class.xsi_namespace_value}" => same_name_param.source_class.xmlns_value })
+    end
+
     {
         "soapenc:arrayType":  "#{namespace}:#{param.name.singularize}[#{same_name_param.map.size}]",
         "xsi:type":           "soapenc:Array",
         "xmlns:soapenc":      "http://schemas.xmlsoap.org/soap/encoding"
-    }
+    }.merge(xmlns)
   end
 
   def wsdl_data_attrs(param)
